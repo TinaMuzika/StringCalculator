@@ -5,30 +5,19 @@ public class Calculate {
     public static void operations(String text) {
         signDetector(text);
 
-        if (sign == '*' || sign == '/') {
-            if (separate[1].contains("\"")) try {
-                throw new Exception("Строчку умножаем или делим только на число");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        exception();
 
         for (int i = 0; i < separate.length; i++) {
             separate[i] = separate[i].replace("\"","");
         }
 
-        String resultText;
-        if (sign == '+') {
-            resultText = sum(text);
-        } else if (sign == '*') {
-            resultText = multiply(text);
-        } else if (sign == '-') {
-            resultText = subtraction(text);
-        } else {
-            resultText = division(text);
-        }
+        String resultText = calculator(text);
 
-        System.out.println("\"" + resultText + "\"");
+        if (resultText.length() > 40) {
+            System.out.println("\"" + resultText.substring(0,40) + "...\"");
+        } else {
+            System.out.println("\"" + resultText + "\"");
+        }
     }
 
     private static char signDetector(String text) {
@@ -52,6 +41,61 @@ public class Calculate {
             }
         }
         return sign;
+    }
+
+    private static void exception() {
+        if(!separate[0].contains("\"")) {
+            try {
+                throw new Exception("Первый аргумент не строка");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (sign == '*' || sign == '/') {
+            if (separate[1].contains("\"")) {
+                try {
+                    throw new Exception("Строчку умножаем или делим только на число");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (Integer.parseInt(separate[1]) > 10 || Integer.parseInt(separate[1]) < 1) {
+                try {
+                    throw new Exception("Принимаются только числа от 1 до 10");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            if (!separate[1].contains("\"")) {
+                try {
+                    throw new Exception("Прибавить или вычесть можно только строку");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        if (separate[0].length() > 10 || separate[1].length() > 10) try {
+            throw new Exception("Длина строки не должна быть больше 10");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String calculator(String text) {
+        String resultText;
+        if (sign == '+') {
+            resultText = sum(text);
+        } else if (sign == '*') {
+            resultText = multiply(text);
+        } else if (sign == '-') {
+            resultText = subtraction(text);
+        } else {
+            resultText = division(text);
+        }
+        return resultText;
     }
 
     private static String sum(String text) {
